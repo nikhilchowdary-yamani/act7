@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart'; // Import the color picker package
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 void main() {
   runApp(MyApp());
@@ -22,8 +22,10 @@ class FadingTextAnimation extends StatefulWidget {
 class _FadingTextAnimationState extends State<FadingTextAnimation> {
   bool _isVisible = true;
   bool _isDarkMode = false;
+  bool _showFrame = true;
   Color _textColor = Colors.grey;
   int _currentPage = 0;
+  final PageController _pageController = PageController();
 
   void toggleVisibility() {
     setState(() {
@@ -34,6 +36,12 @@ class _FadingTextAnimationState extends State<FadingTextAnimation> {
   void toggleTheme() {
     setState(() {
       _isDarkMode = !_isDarkMode;
+    });
+  }
+
+  void toggleFrame() {
+    setState(() {
+      _showFrame = !_showFrame;
     });
   }
 
@@ -88,42 +96,76 @@ class _FadingTextAnimationState extends State<FadingTextAnimation> {
       ),
       body: Container(
         color: _isDarkMode ? Colors.grey[850] : Colors.white,
-        child: PageView(
-          onPageChanged: (index) {
-            setState(() {
-              _currentPage = index;
-              _isVisible = true; // Reset visibility when changing pages
-            });
-          },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // First animation page
-            Center(
-              child: AnimatedOpacity(
-                opacity: _isVisible ? 1.0 : 0.0,
-                duration: Duration(seconds: 3),
-                child: Text(
-                  'Hello, Flutter!',
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: _textColor,
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                    _isVisible = true;
+                  });
+                },
+                children: [
+                  Center(
+                    child: AnimatedOpacity(
+                      opacity: _isVisible ? 1.0 : 0.0,
+                      duration: Duration(seconds: 3),
+                      child: Text(
+                        'Hello, Flutter!',
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: _textColor,
+                        ),
+                      ),
+                    ),
                   ),
+                  Center(
+                    child: AnimatedOpacity(
+                      opacity: _isVisible ? 1.0 : 0.0,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                      child: Text(
+                        'Swipe Animation!',
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: _textColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.all(16.0),
+              decoration: _showFrame
+                  ? BoxDecoration(
+                      border: Border.all(color: Colors.blue, width: 4),
+                      borderRadius: BorderRadius.circular(15),
+                    )
+                  : null,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.network(
+                  'https://pe-images.s3.amazonaws.com/basics/cc/image-size-resolution/resize-images-for-print/image-cropped-8x10.jpg',
+                  width: 150,
+                  height: 150,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-            // Second animation page
-            Center(
-              child: AnimatedOpacity(
-                opacity: _isVisible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 500),
-                curve: Curves.easeInOut,
-                child: Text(
-                  'Swipe Animation!',
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: _textColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 80.0),
+              child: SwitchListTile(
+                title: Text('Toggle Frame'),
+                value: _showFrame,
+                onChanged: (value) {
+                  toggleFrame();
+                },
               ),
             ),
           ],
@@ -139,8 +181,13 @@ class _FadingTextAnimationState extends State<FadingTextAnimation> {
         onTap: (index) {
           setState(() {
             _currentPage = index;
-            _isVisible = true; // Reset visibility when changing pages
+            _isVisible = true;
           });
+          _pageController.animateToPage(
+            index,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
         },
         items: [
           BottomNavigationBarItem(
