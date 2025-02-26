@@ -22,7 +22,7 @@ class FadingTextAnimation extends StatefulWidget {
 class _FadingTextAnimationState extends State<FadingTextAnimation> {
   bool _isVisible = true;
   bool _isDarkMode = false;
-  Color _textColor = Colors.black;
+  Color _textColor = Colors.grey;
   int _currentPage = 0;
 
   void toggleVisibility() {
@@ -72,7 +72,7 @@ class _FadingTextAnimationState extends State<FadingTextAnimation> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Fading Text Animation'),
-        backgroundColor: _isDarkMode ? Colors.grey[900] : Colors.blue,
+        backgroundColor: _isDarkMode ? Colors.grey : Colors.blue,
         actions: [
           IconButton(
             icon: Icon(_isDarkMode ? Icons.wb_sunny : Icons.nightlight_round),
@@ -100,7 +100,7 @@ class _FadingTextAnimationState extends State<FadingTextAnimation> {
             Center(
               child: AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
-                duration: Duration(seconds: 1),
+                duration: Duration(seconds: 3),
                 child: Text(
                   'Hello, Flutter!',
                   style: TextStyle(
